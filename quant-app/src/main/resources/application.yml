@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: quant
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/quant?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${DB_USERNAME:quant}
+    password: ${DB_PASSWORD:quant}
+
+server:
+  port: ${APP_PORT:8080}
+
+quant:
+  akshare:
+    base-url: ${AKSHARE_BASE_URL:http://localhost:18080}
+    user-agent: ${AKSHARE_USER_AGENT:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36}
+  sync:
+    stock-code:
+      base-url: ${XUEQIU_BASE_URL:https://xueqiu.com}
+      user-agent: ${XUEQIU_USER_AGENT:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36}
+      page-size: ${SYNC_STOCK_CODE_PAGE_SIZE:100}
+      max-pages: ${SYNC_STOCK_CODE_MAX_PAGES:200}
+      throttle-ms: ${SYNC_STOCK_CODE_THROTTLE_MS:500}
+      max-retries: ${SYNC_STOCK_CODE_MAX_RETRIES:3}
+      retry-backoff-ms: ${SYNC_STOCK_CODE_RETRY_BACKOFF_MS:1200}
+    daily-quote:
+      recent-months: ${SYNC_DAILY_QUOTE_RECENT_MONTHS:6}
+      throttle-ms: ${SYNC_DAILY_QUOTE_THROTTLE_MS:300}
+      max-retries: ${SYNC_DAILY_QUOTE_MAX_RETRIES:3}
+      retry-backoff-ms: ${SYNC_DAILY_QUOTE_RETRY_BACKOFF_MS:1200}
+      batch-size: ${SYNC_DAILY_QUOTE_BATCH_SIZE:200}
+      adjust: ${SYNC_DAILY_QUOTE_ADJUST:QFQ}
+      max-stocks: ${SYNC_DAILY_QUOTE_MAX_STOCKS:0}
+      incremental-lookback-days: ${SYNC_DAILY_QUOTE_INCREMENTAL_LOOKBACK_DAYS:3}
+    eastmoney:
+      base-url: ${EASTMONEY_BASE_URL:https://push2.eastmoney.com}
+      user-agent: ${EASTMONEY_USER_AGENT:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36}
+
+mybatis-plus:
+  global-config:
+    banner: false
+  configuration:
+    map-underscore-to-camel-case: true

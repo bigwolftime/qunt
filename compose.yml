@@ -13,11 +13,27 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       MARKET_BASE_URL: https://api.binance.com
+      AKSHARE_BASE_URL: http://aktools:18080
+      NO_PROXY: localhost,127.0.0.1,aktools
+      no_proxy: localhost,127.0.0.1,aktools
     ports:
       - "8080:8080"
     depends_on:
+      - aktools
       - mysql
       - redis
+
+  aktools:
+    image: docker.io/library/python:3.11-slim
+    container_name: quant-aktools
+    command: >
+      sh -c "pip install --no-cache-dir aktools==0.0.89
+      && python -m aktools --host 0.0.0.0 --port 18080"
+    environment:
+      NO_PROXY: localhost,127.0.0.1,aktools
+      no_proxy: localhost,127.0.0.1,aktools
+    ports:
+      - "18080:18080"
 
   mysql:
     image: docker.io/library/mysql:8.4

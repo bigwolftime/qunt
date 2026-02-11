@@ -1,10 +1,12 @@
 # quant
 
-Spring Boot quant service with:
-- Spring Web
-- Spring Data JPA + MySQL
-- Spring Data Redis (cache)
-- Spring HTTP Interface (`@HttpExchange`) for outbound HTTP
+Multi-module Spring Boot quant service:
+- `quant-model`: entities/dto/enums/constants
+- `quant-persistence`: mapper layer
+- `quant-market`: market data sync services
+- `quant-factor`: factor layer (scaffold)
+- `quant-backtest`: backtest layer (scaffold)
+- `quant-app`: Spring Boot entry module
 
 ## Local run
 
@@ -22,7 +24,7 @@ mvn clean package
 Run app only:
 
 ```bash
-mvn spring-boot:run
+mvn -pl quant-app -am spring-boot:run
 ```
 
 ## Deploy with Podman Compose
@@ -38,24 +40,30 @@ Stop:
 podman compose -f compose.yml down
 ```
 
+AKShare HTTP (AKTools) service will be exposed on `http://localhost:18080`.
+Quick check:
+
+```bash
+curl 'http://localhost:18080/api/public/stock_zh_a_hist?symbol=600519&period=daily&start_date=20260101&end_date=20260210&adjust='
+```
+
 ## APIs
 
-Create strategy:
+Sync all A-share stock codes from xueqiu (paged + throttled + retried):
 
 ```bash
-curl -X POST 'http://localhost:8080/api/strategies' \
-  -H 'Content-Type: application/json' \
-  -d '{"name":"mean-reversion","description":"sample strategy"}'
+curl -X POST 'http://localhost:8080/api/sync/stock-codes'
 ```
 
-List strategies:
+Proxy AKShare daily quotes via this service:
 
 ```bash
-curl 'http://localhost:8080/api/strategies'
+curl 'http://localhost:8080/api/akshare/stock-zh-a-hist?symbol=600519&startDate=20260101&endDate=20260210&adjust='
 ```
 
-Query market price via HTTP Interface:
-
-```bash
-curl 'http://localhost:8080/api/market/BTCUSDT'
-```
+Sync config keys:
+- `quant.sync.stock-code.page-size`
+- `quant.sync.stock-code.throttle-ms`
+- `quant.sync.stock-code.max-retries`
+- `quant.sync.stock-code.retry-backoff-ms`
+- `quant.sync.stock-code.max-pages`
