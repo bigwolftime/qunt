@@ -1,0 +1,45 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Containerfile
+    image: localhost/quant-app:latest
+    container_name: quant-app
+    environment:
+      APP_PORT: 8080
+      DB_URL: jdbc:mysql://mysql:3306/quant?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USERNAME: quant
+      DB_PASSWORD: quant
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      MARKET_BASE_URL: https://api.binance.com
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - redis
+
+  mysql:
+    image: docker.io/library/mysql:8.4
+    container_name: quant-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: quant
+      MYSQL_USER: quant
+      MYSQL_PASSWORD: quant
+    ports:
+      - "3306:3306"
+    volumes:
+      - quant_mysql_data:/var/lib/mysql
+
+  redis:
+    image: docker.io/library/redis:7.4-alpine
+    container_name: quant-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - quant_redis_data:/data
+
+volumes:
+  quant_mysql_data:
+  quant_redis_data:
