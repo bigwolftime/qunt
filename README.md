@@ -40,6 +40,15 @@ Stop:
 podman compose -f compose.yml down
 ```
 
+Remote debug (JDWP, port `5005`):
+
+```bash
+JAVA_TOOL_OPTIONS='-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005' \
+podman compose -f compose.yml up -d --build app
+```
+
+Then attach IDE remote debugger to `localhost:5005`.
+
 AKShare HTTP (AKTools) service will be exposed on `http://localhost:18080`.
 Quick check:
 

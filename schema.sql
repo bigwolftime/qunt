@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS stock_security (
   code              VARCHAR(8)   NOT NULL DEFAULT '' COMMENT '证券代码(如600000)',
   exchange          VARCHAR(8)   NOT NULL DEFAULT '' COMMENT '交易所(SSE/SZSE/BSE)',
   name              VARCHAR(64)  NOT NULL DEFAULT '' COMMENT '证券简称',
-  area              VARCHAR(32)  NOT NULL DEFAULT '' COMMENT '地区',
   board_type        VARCHAR(16)  NOT NULL DEFAULT '' COMMENT '板块类型(MAIN/STAR/GEM/BSE/OTHER)',
   create_time        DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time        DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',

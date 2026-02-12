@@ -13,6 +13,8 @@ import com.quant.model.entity.StockDailyQuoteEntity;
 import com.quant.model.entity.StockDailyValuationEntity;
 import com.quant.model.entity.StockSecurityEntity;
 import jakarta.annotation.Resource;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,7 +150,7 @@ public class StockDailyQuoteSyncService {
                 JsonNode history = fetchHistoryWithRetry(stock.getCode(), beg, end, adjust);
                 List<StockDailyQuoteEntity> rows = toQuoteEntities(stock.getTsCode(), history);
 
-                if (rows.isEmpty()) {
+                if (CollectionUtils.isEmpty(rows)) {
                     successStocks++;
                     syncDailyValuationSnapshot(stock, incrementalMode);
                     log.info("[daily-quote-sync] empty kline, tsCode={}, begin={}, end={}", stock.getTsCode(), beg, end);
@@ -156,9 +158,7 @@ public class StockDailyQuoteSyncService {
                     continue;
                 }
 
-                for (int from = 0; from < rows.size(); from += batchSize) {
-                    int to = Math.min(from + batchSize, rows.size());
-                    List<StockDailyQuoteEntity> chunk = rows.subList(from, to);
+                for (List<StockDailyQuoteEntity> chunk : ListUtils.partition(rows, batchSize)) {
                     stockDailyQuoteMapper.upsertBatch(chunk);
                     upsertRows += chunk.size();
                 }
@@ -231,9 +231,7 @@ public class StockDailyQuoteSyncService {
                 List<StockDailyValuationEntity> rows = toValuationEntities(stock.getTsCode(), valuationArray, beginDate, endDate);
                 fetchedValuationRows += rows.size();
 
-                for (int from = 0; from < rows.size(); from += batchSize) {
-                    int to = Math.min(from + batchSize, rows.size());
-                    List<StockDailyValuationEntity> chunk = rows.subList(from, to);
+                for (List<StockDailyValuationEntity> chunk : ListUtils.partition(rows, batchSize)) {
                     upsertRows += stockDailyValuationMapper.upsertBatch(chunk);
                 }
 
@@ -390,7 +388,7 @@ public class StockDailyQuoteSyncService {
     }
 
     private List<StockSecurityEntity> sliceByMaxStocks(List<StockSecurityEntity> stocks, int maxStocks) {
-        if (stocks == null || stocks.isEmpty()) {
+        if (CollectionUtils.isEmpty(stocks)) {
             return Collections.emptyList();
         }
         if (maxStocks <= 0 || stocks.size() <= maxStocks) {
@@ -403,7 +401,7 @@ public class StockDailyQuoteSyncService {
         Set<String> normalizedCodes = normalizeCodes(targetCodes);
         boolean hasTargetCodes = !normalizedCodes.isEmpty();
         List<StockSecurityEntity> stocks = filterStocksByCodes(allStocks, targetCodes);
-        if (stocks.isEmpty()) {
+        if (CollectionUtils.isEmpty(stocks)) {
             return stocks;
         }
         if (hasTargetCodes) {
@@ -413,7 +411,7 @@ public class StockDailyQuoteSyncService {
     }
 
     private List<StockSecurityEntity> filterStocksByCodes(List<StockSecurityEntity> stocks, List<String> targetCodes) {
-        if (stocks == null || stocks.isEmpty()) {
+        if (CollectionUtils.isEmpty(stocks)) {
             return Collections.emptyList();
         }
         Set<String> normalizedCodes = normalizeCodes(targetCodes);
@@ -433,7 +431,7 @@ public class StockDailyQuoteSyncService {
     }
 
     private Set<String> normalizeCodes(List<String> targetCodes) {
-        if (targetCodes == null || targetCodes.isEmpty()) {
+        if (CollectionUtils.isEmpty(targetCodes)) {
             return Collections.emptySet();
         }
 
