@@ -63,3 +63,54 @@ CREATE TABLE IF NOT EXISTS stock_daily_valuation (
   UNIQUE KEY uk_daily_valuation_ts_code_trade_date (ts_code, trade_date),
   KEY idx_daily_valuation_trade_date (trade_date)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='股票日频估值表';
+
+CREATE TABLE IF NOT EXISTS realtime_holding (
+  id                 BIGINT         NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  account_id         VARCHAR(64)    NOT NULL DEFAULT '' COMMENT '账户标识',
+  broker_code        VARCHAR(32)    NOT NULL DEFAULT '' COMMENT '券商编码',
+  ts_code            VARCHAR(16)    NOT NULL DEFAULT '' COMMENT '股票唯一代码',
+  stock_code         VARCHAR(8)     NOT NULL DEFAULT '' COMMENT '证券代码',
+  stock_name         VARCHAR(64)    NOT NULL DEFAULT '' COMMENT '证券简称',
+  quantity           BIGINT         NOT NULL DEFAULT 0 COMMENT '当前持仓数量',
+  available_quantity BIGINT         NOT NULL DEFAULT 0 COMMENT '可用数量',
+  cost_price         DECIMAL(12,4)  NOT NULL DEFAULT 0.0000 COMMENT '成本价',
+  last_price         DECIMAL(12,4)  NOT NULL DEFAULT 0.0000 COMMENT '最新价',
+  market_value       DECIMAL(20,2)  NOT NULL DEFAULT 0.00 COMMENT '持仓市值',
+  profit_amount      DECIMAL(20,2)  NOT NULL DEFAULT 0.00 COMMENT '浮动盈亏',
+  profit_ratio       DECIMAL(10,4)  NOT NULL DEFAULT 0.0000 COMMENT '浮动盈亏比(%)',
+  snapshot_time      DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '快照时间',
+  raw_payload        TEXT           NULL COMMENT '原始持仓载荷',
+  create_time        DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_time        DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_realtime_holding_account_broker_ts_code (account_id, broker_code, ts_code),
+  KEY idx_realtime_holding_snapshot_time (snapshot_time),
+  KEY idx_realtime_holding_stock_code (stock_code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='实时持仓表';
+
+CREATE TABLE IF NOT EXISTS trade_record (
+  id                 BIGINT         NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  account_id         VARCHAR(64)    NOT NULL DEFAULT '' COMMENT '账户标识',
+  broker_code        VARCHAR(32)    NOT NULL DEFAULT '' COMMENT '券商编码',
+  ts_code            VARCHAR(16)    NOT NULL DEFAULT '' COMMENT '股票唯一代码',
+  stock_code         VARCHAR(8)     NOT NULL DEFAULT '' COMMENT '证券代码',
+  stock_name         VARCHAR(64)    NOT NULL DEFAULT '' COMMENT '证券简称',
+  side               VARCHAR(8)     NOT NULL DEFAULT '' COMMENT '方向 BUY/SELL',
+  limit_price        DECIMAL(12,4)  NOT NULL DEFAULT 0.0000 COMMENT '委托价格',
+  requested_quantity BIGINT         NOT NULL DEFAULT 0 COMMENT '委托数量',
+  executed_price     DECIMAL(12,4)  NOT NULL DEFAULT 0.0000 COMMENT '成交价格',
+  executed_quantity  BIGINT         NOT NULL DEFAULT 0 COMMENT '成交数量',
+  broker_order_no    VARCHAR(64)    NOT NULL DEFAULT '' COMMENT '券商订单号',
+  status             VARCHAR(16)    NOT NULL DEFAULT '' COMMENT '状态 CREATED/RUNNING/SUCCESS/FAILED/CANCELLED',
+  status_message     VARCHAR(255)   NOT NULL DEFAULT '' COMMENT '状态说明',
+  raw_payload        TEXT           NULL COMMENT '原始执行载荷',
+  requested_at       DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '请求时间',
+  executed_at        DATETIME       NULL COMMENT '执行完成时间',
+  create_time        DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_time        DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (id),
+  KEY idx_trade_record_account_status (account_id, status),
+  KEY idx_trade_record_requested_at (requested_at),
+  KEY idx_trade_record_stock_code (stock_code),
+  KEY idx_trade_record_broker_order_no (broker_order_no)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='交易记录表';

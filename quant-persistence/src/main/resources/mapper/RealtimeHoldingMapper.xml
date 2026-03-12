@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quant.persistence.mapper.RealtimeHoldingMapper">
+
+    <insert id="upsertBatch">
+        INSERT INTO realtime_holding (
+            account_id,
+            broker_code,
+            ts_code,
+            stock_code,
+            stock_name,
+            quantity,
+            available_quantity,
+            cost_price,
+            last_price,
+            market_value,
+            profit_amount,
+            profit_ratio,
+            snapshot_time,
+            raw_payload,
+            create_time,
+            update_time
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.accountId},
+            #{item.brokerCode},
+            #{item.tsCode},
+            #{item.stockCode},
+            #{item.stockName},
+            #{item.quantity},
+            #{item.availableQuantity},
+            #{item.costPrice},
+            #{item.lastPrice},
+            #{item.marketValue},
+            #{item.profitAmount},
+            #{item.profitRatio},
+            #{item.snapshotTime},
+            #{item.rawPayload},
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP
+            )
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+            stock_name = VALUES(stock_name),
+            quantity = VALUES(quantity),
+            available_quantity = VALUES(available_quantity),
+            cost_price = VALUES(cost_price),
+            last_price = VALUES(last_price),
+            market_value = VALUES(market_value),
+            profit_amount = VALUES(profit_amount),
+            profit_ratio = VALUES(profit_ratio),
+            snapshot_time = VALUES(snapshot_time),
+            raw_payload = VALUES(raw_payload),
+            update_time = CURRENT_TIMESTAMP
+    </insert>
+</mapper>

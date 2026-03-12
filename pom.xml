@@ -20,6 +20,7 @@
         <module>quant-model</module>
         <module>quant-persistence</module>
         <module>quant-market</module>
+        <module>quant-trade</module>
         <module>quant-factor</module>
         <module>quant-backtest</module>
         <module>quant-app</module>

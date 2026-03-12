@@ -30,6 +30,11 @@
         </dependency>
         <dependency>
             <groupId>com.quant</groupId>
+            <artifactId>quant-trade</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.quant</groupId>
             <artifactId>quant-factor</artifactId>
             <version>${project.version}</version>
         </dependency>

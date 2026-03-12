@@ -34,6 +34,16 @@ quant:
     eastmoney:
       base-url: ${EASTMONEY_BASE_URL:https://push2.eastmoney.com}
       user-agent: ${EASTMONEY_USER_AGENT:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36}
+  trade:
+    android:
+      enabled: ${ANDROID_TRADE_ENABLED:false}
+      adb-path: ${ANDROID_TRADE_ADB_PATH:adb}
+      device-serial: ${ANDROID_TRADE_DEVICE_SERIAL:}
+      command-timeout-ms: ${ANDROID_TRADE_COMMAND_TIMEOUT_MS:15000}
+      tap-settle-ms: ${ANDROID_TRADE_TAP_SETTLE_MS:800}
+      default-broker: ${ANDROID_TRADE_DEFAULT_BROKER:}
+      default-account-id: ${ANDROID_TRADE_DEFAULT_ACCOUNT_ID:}
+      brokers: {}
 
 mybatis-plus:
   global-config:
